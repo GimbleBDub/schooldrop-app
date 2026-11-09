@@ -10,7 +10,9 @@ One Flutter app for every side of SchoolDrop:
 | School | web (works on phones too) | Gate list (any staff: release to driver, confirm arrivals), staff invites, enrollment confirmations (admins), school profile |
 | SchoolDrop staff | **web only** | Dashboard, driver & school verification (document viewer), advert review, incidents, live trips map, users, bookings, payments/refunds, payouts, school terms, staff & permissions, audit log |
 
-The backend is the sibling folder `BusStop` (Spring Boot). Its OpenAPI spec is at `BusStop/docs/openapi.json` and live at `/api/swagger-ui.html`.
+The backend is [schooldrop-be](https://github.com/GimbleBDub/schooldrop-be) (Spring Boot). Its OpenAPI spec is at `docs/openapi.json` there and live at `/api/swagger-ui.html`.
+
+How the app is built and why: [docs/ARCHITECTURE.md](docs/ARCHITECTURE.md). Open work: [issues](https://github.com/GimbleBDub/schooldrop-app/issues).
 
 ## Run
 
@@ -23,7 +25,7 @@ flutter run --dart-define=API_BASE_URL=http://10.0.2.2:8097/api/v1   # Android e
 ```
 
 - `API_BASE_URL` defaults to `http://localhost:8097/api/v1`. On a real phone, use your computer's LAN address.
-- Start the backend first: in `../BusStop`, `docker compose --profile app up -d --build` (or see its README). Demo logins: `parent@`, `driver@`, `school@schooldrop.local` / `Demo-Pass-123`, admin `admin@schooldrop.local` / `ChangeMe-Local-123`.
+- Start the backend first: in a clone of schooldrop-be, `docker compose --profile app up -d --build` (or see its README). Demo logins: `parent@`, `driver@`, `school@schooldrop.local` / `Demo-Pass-123`, admin `admin@schooldrop.local` / `ChangeMe-Local-123`.
 - Locally the backend accepts browser calls from any `localhost` port; in production set `CORS_ORIGINS`.
 - `SANDBOX_PAYMENTS` (default `true`) shows "Simulate success/decline" buttons when the backend runs the sandbox gateway. Build production with `--dart-define=SANDBOX_PAYMENTS=false`.
 
@@ -51,11 +53,3 @@ State: Riverpod 3 (`FutureProvider`s per screen, invalidated after actions). Nav
 ```bash
 flutter analyze && flutter test
 ```
-
-## Before release
-
-- **Push notifications:** add Firebase (`firebase_messaging`), then register the FCM token with `POST /v1/notifications/devices`. The backend's `PushSender` also needs an FCM implementation. Until then the in-app inbox works.
-- **Driver location in the background:** location is shared while the trip screen is open. For screen-off tracking, add a foreground service (Android) and background location mode (iOS).
-- **App icons, splash, store listings,** and the Android `applicationId` / iOS bundle id (`com.gimble.schooldrop_app`).
-- Set web to path URLs (`usePathUrlStrategy`) if you host it behind a server that rewrites to `index.html`.
-# schooldrop-app
